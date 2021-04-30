@@ -31,7 +31,6 @@ pyOpenSSL
 PySocks
 python-dateutil
 pytz==2021.1
-pypiwin32
 pyzmq==20.0.0
 requests
 six
