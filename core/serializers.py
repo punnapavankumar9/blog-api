@@ -6,3 +6,5 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = ['title', 'content', 'author', 'blog_pic']
+    def create(self, validated_data):
+        return Blog.objects.create(**validated_data)

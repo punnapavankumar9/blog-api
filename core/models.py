@@ -13,3 +13,6 @@ class Blog(models.Model):
     def __str__(self):
         return f"{self.author}\'s article"
     
+
+    def save(self, *args, **kwargs):
+        return super(Blog, self).save(*args, **kwargs)
