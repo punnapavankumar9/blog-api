@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from PIL import Image
 # Create your models here.
 
 class Blog(models.Model):
@@ -15,4 +16,20 @@ class Blog(models.Model):
     
 
     def save(self, *args, **kwargs):
-        return super(Blog, self).save(*args, **kwargs)
+        super(Blog, self).save(*args, **kwargs)
+        if self.blog_pic:
+            img = Image.open(self.blog_pic.path, 'r')
+            if img.height > 300 or img.width > 300:
+                img.thumbnail((300,300))
+                img.save(self.blog_pic.path)
+
+
+class Comment(models.Model):
+    content = models.CharField(max_length=200, blank=False, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    date_commented = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f'{self.user.username}\' comment'
