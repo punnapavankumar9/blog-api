@@ -5,8 +5,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from core.serializers import BlogSerializer
-from core.models import Blog
+from core.serializers import BlogSerializer, CommentSerailizer
+from core.models import Blog, Comment
 from django.contrib.auth.models import User
 # Create your views here.
 
@@ -16,7 +16,7 @@ def list_blogs(request):
     if request.method == 'GET':
         blogs = Blog.objects.all()
         paginator = PageNumberPagination()
-        paginator.page_size = 1
+        paginator.page_size = 5
         result_page = paginator.paginate_queryset(blogs, request)
         serializer = BlogSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -49,13 +49,76 @@ def detail_view(request, pk):
         return Response(BlogSerializer(blog).data, status=status.HTTP_200_OK)
 
     if request.method == "PUT":
-        serializer = BlogSerializer(blog, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_304_NOT_MODIFIED)
+        if blog.author.username == request.user.username:
+            serializer = BlogSerializer(blog, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_304_NOT_MODIFIED)
+        return Response(data={'deleted':False, 'error':'you don\'t have access to delete this blog'}, status=status.HTTP_401_UNAUTHORIZED)
 
     if request.method == 'DELETE':
-        blog.delete()
-        return Response(data={"deleted":'True'}, status=status.HTTP_204_NO_CONTENT)
+        if blog.author.username == request.user.username:
+            blog.delete()
+            return Response(data={"deleted": True}, status=status.HTTP_200_OK)
+        return Response(data={'deleted':False, 'error':'you don\'t have access to delete this blog'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def get_comment_list(request, pk):
+    try:
+        blog = Blog.objects.get(pk=pk)
+    except:
+        return Response({'error': 'blog doesn\'t exist'}, status=status.HTTP_403_FORBIDDEN)
+    if request.method == "GET":
+        comments = Comment.objects.filter(blog=pk)
+        paginator = PageNumberPagination()
+        paginator.page_size = 3
+        result_page = paginator.paginate_queryset(comments, request)
+        serializer = CommentSerailizer(result_page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated,])
+def post_comment(request, pk):
+    try:
+        blog = Blog.objects.get(pk=pk)
+    except:
+        return Response({'error': 'blog doesn\'t exist'}, status=status.HTTP_403_FORBIDDEN)
+    
+    if request.method == 'POST':
+        serializer = CommentSerailizer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, blog=blog)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAuthenticated, ])
+def comment_actions(request, pk,comment_id):
+    try:
+        comment = Comment.objects.get(user=request.user, blog=pk,pk=comment_id)
+    except:
+        return Response({'error': 'comment doesn\'t exist'}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'PUT':
+        if comment.user.username == request.user.username:
+            serializer = CommentSerailizer(comment, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(data={'updated':False, 'error':'you don\'t have access to delete this comment'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        
+    if request.method == 'DELETE':
+        if comment.user.username == request.user.username:
+            comment.delete()
+            return Response(data={"deleted": True}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'deleted':False, 'error':'you don\'t have access to delete this comment'}, status=status.HTTP_401_UNAUTHORIZED)

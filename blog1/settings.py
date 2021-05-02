@@ -48,8 +48,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
-    
-    
+
 ]
 
 MIDDLEWARE = [
@@ -142,7 +141,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-if DEBUG:
+if DEBUG==False:
         
     # aws stattic and media files configuration
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
