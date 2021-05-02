@@ -33,3 +33,19 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.username}\' comment'
+
+
+class UserFollowing(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    date_of_action = models.DateTimeField(auto_now_add=True)
+
+
+    class Meta:
+        constraints  = [
+            models.UniqueConstraint(fields=['user','following_user'],  name="unique_followers")
+        ]
+        ordering = ('-date_of_action', )
+    def __str__(self):
+        return f'{self.user} is following {self.following_user}'
+    
