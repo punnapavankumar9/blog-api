@@ -28,10 +28,6 @@ def list_blogs(request):
 @permission_classes([IsAuthenticated,])
 def create_blog(request):
     if request.method == 'POST':
-        # data = request.data.copy()
-        # data['author'] = 1
-        # request.data['author'] = 1
-
         serializer = BlogSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(author=request.user)

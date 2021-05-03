@@ -1,5 +1,18 @@
 # blog1
-blog posting site api
+
+blog posting site api with follower-following system implemented and added comments to blog posts
+
+ -  The site is hosted at https://blog-by-punna.herokuapp.com/
+
+
+
+append api/core/ to the main url and follow bellow metioned urls
+ 
+For parameters of post and get request and autherization key you must look into core/serilizers.py and views.py
+ 
+## Examples: 
+ -  https://blog-by-punna.herokuapp.com/api/core/ for listing blogs
+ -  https://blog-by-punna.herokuapp.com/api/core/9/ for single blog with id 9
 ```
     path('', list_blogs, name='blogs_list'),
     path('create/', create_blog, name='create_blog'),
