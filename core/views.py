@@ -27,11 +27,6 @@ def list_blogs(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated,])
 def create_blog(request):
-    if request.method == 'POST':
-        # data = request.data.copy()
-        # data['author'] = 1
-        # request.data['author'] = 1
-
         serializer = BlogSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(author=request.user)
@@ -46,7 +41,7 @@ def detail_view(request, pk):
     try:
         blog = Blog.objects.get(pk=pk)
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error':'blog doesn\'t exist'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
         return Response(BlogSerializer(blog).data, status=status.HTTP_200_OK)
