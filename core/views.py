@@ -160,14 +160,15 @@ def following_actions(request, pk):
         
         except:
             following = None
-        print(',pavan kumar',  type(following))
-        if (following is None and user != user_1) or following is None:
-            serializer = CreateFollower(data = {'following_user':pk})
-            if serializer.is_valid():
-                serializer.save(user=request.user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        if (not following):
+            if  user != user_1:
+                serializer = CreateFollower(data = {'following_user':pk})
+                if serializer.is_valid():
+                    serializer.save(user=request.user)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message':'unable process your request'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             following.delete()
             return Response({'message': 'user removed from following list'}, status=status.HTTP_200_OK)
-        
+
