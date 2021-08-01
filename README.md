@@ -2,7 +2,7 @@
 
 blog posting site api with follower-following system implemented and added comments to blog posts
 
- -  The site is hosted at https://blog-by-punna.herokuapp.com/
+ -  The site is hosted at https://blog-by-punna.herokuapp.com/api/core/
 
 append api/core/ to the main url and follow bellow metioned urls
  
