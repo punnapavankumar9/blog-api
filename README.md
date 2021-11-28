@@ -22,7 +22,6 @@ For parameters of post and get request and autherization key you must look into 
   {
          "token": "***************************"
   }
-
 ```
  - #### For registering as new user
    ``` 
@@ -38,6 +37,12 @@ For parameters of post and get request and autherization key you must look into 
        "email": "***************",
        "token": "*****************************"
    }
+   ```
+ - #### Autherization token attaching to the protected routes
+``` 
+ curl --location --request GET 'https://blog-by-punna.herokuapp.com/api/core/1/' \
+--header 'Authorization: Token *********************************'
+
 ```
 ```
 #### append api/core/ to the main url and follow bellow metioned urls
