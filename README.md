@@ -4,14 +4,43 @@ blog posting site api with follower-following system implemented and added comme
 
  -  The site is hosted at https://blog-by-punna.herokuapp.com/api/core/
 
-append api/core/ to the main url and follow bellow metioned urls
  
 For parameters of post and get request and autherization key you must look into core/serilizers.py and views.py
  
 ## Examples: 
  -  https://blog-by-punna.herokuapp.com/api/core/ for listing blogs
  -  https://blog-by-punna.herokuapp.com/api/core/9/ for single blog with id 9
+## user authentication
+
+ - #### login request to get the auth token 
+``` 
+  curl --location --request POST 'https://blog-by-punna.herokuapp.com/api/accounts/login/' \
+  --form 'username="*********"' \
+  --form 'password="*********"'
+
+  response
+  {
+         "token": "***************************"
+  }
+
 ```
+ - #### For registering as new user
+   ``` 
+   curl --location --request POST 'https://blog-by-punna.herokuapp.com/api/accounts/register/' \
+   --form 'username="**********"' \
+   --form 'email="******************"' \
+   --form 'password="**********"' \
+   --form 'password1="*************"'
+
+   response
+   {
+       "username": "**********",
+       "email": "***************",
+       "token": "*****************************"
+   }
+```
+```
+#### append api/core/ to the main url and follow bellow metioned urls
     path('', list_blogs, name='blogs_list'),
     path('create/', create_blog, name='create_blog'),
     path('<int:pk>/', detail_view, name='detail_view'),
